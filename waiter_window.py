@@ -1,7 +1,7 @@
 # waiter_window.py
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QListWidget
-from database import session, Order
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget, QListWidget, QMessageBox
+from database import session, Order, OrderStatus
 
 class WaiterWindow(QMainWindow):
     def __init__(self, waiter):
@@ -22,6 +22,14 @@ class WaiterWindow(QMainWindow):
         self.add_order_button.clicked.connect(self.add_order)
         layout.addWidget(self.add_order_button)
 
+        self.accept_order_button = QPushButton('Accept Order')
+        self.accept_order_button.clicked.connect(self.accept_order)
+        layout.addWidget(self.accept_order_button)
+
+        self.pay_order_button = QPushButton('Pay Order')
+        self.pay_order_button.clicked.connect(self.pay_order)
+        layout.addWidget(self.pay_order_button)
+
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
@@ -35,7 +43,37 @@ class WaiterWindow(QMainWindow):
     def add_order(self):
         from add_order_window import AddOrderWindow
         self.add_order_window = AddOrderWindow(self.waiter)
+        self.add_order_window.order_added.connect(self.load_orders)
         self.add_order_window.show()
+
+    def extract_order_id(self, order_text):
+        return int(order_text.split(':')[0].split(' ')[1])
+
+    def accept_order(self):
+        selected_order = self.order_list.currentItem()
+        if selected_order:
+            order_id = self.extract_order_id(selected_order.text())
+            order = session.query(Order).get(order_id)
+            if order.status == OrderStatus.PENDING:
+                order.status = OrderStatus.COOKING
+                session.commit()
+                self.load_orders()
+                QMessageBox.information(self, 'Order Accepted', f'Order {order.id} is now being cooked.')
+            else:
+                QMessageBox.warning(self, 'Error', 'Only pending orders can be accepted.')
+
+    def pay_order(self):
+        selected_order = self.order_list.currentItem()
+        if selected_order:
+            order_id = self.extract_order_id(selected_order.text())
+            order = session.query(Order).get(order_id)
+            if order.status == OrderStatus.READY:
+                order.status = OrderStatus.PAID
+                session.commit()
+                self.load_orders()
+                QMessageBox.information(self, 'Order Paid', f'Order {order.id} has been paid.')
+            else:
+                QMessageBox.warning(self, 'Error', 'Only ready orders can be marked as paid.')
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

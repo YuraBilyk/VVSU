@@ -1,6 +1,6 @@
 # database.py
 import os
-from sqlalchemy import create_engine, Column, Integer, String, Enum, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Enum, ForeignKey, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, relationship
 import enum
@@ -39,6 +39,20 @@ class Order(Base):
     status = Column(Enum(OrderStatus), default=OrderStatus.PENDING)
     waiter_id = Column(Integer, ForeignKey('users.id'))
     waiter = relationship('User', foreign_keys=[waiter_id])
+
+shift_assignment = Table('shift_assignment', Base.metadata,
+    Column('shift_id', Integer, ForeignKey('shifts.id')),
+    Column('user_id', Integer, ForeignKey('users.id'))
+)
+
+class Shift(Base):
+    __tablename__ = 'shifts'
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    time = Column(String, nullable=False)
+    users = relationship('User', secondary=shift_assignment, back_populates='shifts')
+
+User.shifts = relationship('Shift', secondary=shift_assignment, back_populates='users')
 
 def initialize_database():
     if not os.path.exists('cafe.db'):

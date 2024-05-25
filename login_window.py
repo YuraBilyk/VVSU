@@ -38,8 +38,11 @@ class LoginWindow(QMainWindow):
 
         user = session.query(User).filter_by(username=username, password=password).first()
         if user:
-            QMessageBox.information(self, 'Login', f'Welcome {user.username}!')
-            self.open_role_window(user)
+            if user.status == 'fired':
+                QMessageBox.warning(self, 'Login', 'Your account has been deactivated.')
+            else:
+                QMessageBox.information(self, 'Login', f'Welcome {user.username}!')
+                self.open_role_window(user)
         else:
             QMessageBox.warning(self, 'Login', 'Invalid credentials')
 

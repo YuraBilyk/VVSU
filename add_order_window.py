@@ -1,9 +1,12 @@
 # add_order_window.py
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QMessageBox
+from PyQt5.QtCore import pyqtSignal
 from database import session, Order, OrderStatus, User
 
 class AddOrderWindow(QMainWindow):
+    order_added = pyqtSignal()
+
     def __init__(self, waiter):
         super().__init__()
         self.setWindowTitle('Add Order')
@@ -52,6 +55,7 @@ class AddOrderWindow(QMainWindow):
             )
             session.add(order)
             session.commit()
+            self.order_added.emit()
             QMessageBox.information(self, 'Order Added', 'New order has been added successfully.')
             self.close()
         else:
@@ -59,6 +63,6 @@ class AddOrderWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    add_order_window = AddOrderWindow()
+    add_order_window = AddOrderWindow(None)
     add_order_window.show()
     sys.exit(app.exec_())
