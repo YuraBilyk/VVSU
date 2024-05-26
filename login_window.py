@@ -1,4 +1,6 @@
 # login_window.py
+# Этот файл отвечает за окно входа в систему.
+
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QMessageBox
 from database import session, User, UserRole
@@ -51,11 +53,11 @@ class LoginWindow(QMainWindow):
             from admin_window import AdminWindow
             self.admin_window = AdminWindow(user)
             self.admin_window.show()
-        elif user.role == UserRole.WAITER:
+        elif user.role == UserRole.WAITER:  # Измените на 'receptionist'
             from waiter_window import WaiterWindow
             self.waiter_window = WaiterWindow(user)
             self.waiter_window.show()
-        elif user.role == UserRole.CHEF:
+        elif user.role == UserRole.CHEF:  # Измените на 'housekeeper'
             from chef_window import ChefWindow
             self.chef_window = ChefWindow(user)
             self.chef_window.show()

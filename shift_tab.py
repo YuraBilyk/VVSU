@@ -1,4 +1,6 @@
 # shift_tab.py
+# Этот файл отвечает за вкладку управления сменами.
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QInputDialog, QMessageBox
 from database import session, Shift, User, UserRole
 
@@ -47,7 +49,7 @@ class ShiftTab(QWidget):
         if selected_shift:
             shift_id = int(selected_shift.text().split(' ')[0])
             shift = session.query(Shift).get(shift_id)
-            users = session.query(User).filter(User.role.in_([UserRole.WAITER, UserRole.CHEF])).all()
+            users = session.query(User).filter(User.role.in_([UserRole.WAITER, UserRole.CHEF])).all()  # Измените на [UserRole.RECEPTIONIST, UserRole.HOUSEKEEPER] для отеля
             user_list = [user.username for user in users]
             user_name, ok = QInputDialog.getItem(self, 'Assign User', 'Select user:', user_list, 0, False)
             if ok and user_name:
@@ -57,3 +59,7 @@ class ShiftTab(QWidget):
                     session.commit()
                     self.load_shifts()
                     QMessageBox.information(self, 'Success', f'{user.username} assigned to {shift.name}')
+
+# load_shifts: Загружает список всех смен из базы данных.
+# add_shift: Добавляет новую смену с заданным именем и временем.
+# assign_user: Назначает пользователя на выбранную смену. В отеле роли могут быть receptionist и housekeeper.

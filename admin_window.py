@@ -1,4 +1,6 @@
 # admin_window.py
+# Этот файл отвечает за интерфейс администратора с вкладками для управления сотрудниками, заказами и сменами.
+
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTabWidget, QVBoxLayout, QWidget
 from employee_tab import EmployeeTab
@@ -37,3 +39,7 @@ if __name__ == '__main__':
     admin_window = AdminWindow(None)
     admin_window.show()
     sys.exit(app.exec_())
+
+
+# AdminWindow: Основное окно администратора, которое содержит вкладки для управления сотрудниками, заказами и сменами.
+# QTabWidget: Виджет для создания вкладок. Добавьте свои вкладки для отеля, например, "Bookings" и "Staff Schedules".

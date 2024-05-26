@@ -1,4 +1,6 @@
 # employee_tab.py
+# Этот файл отвечает за вкладку управления сотрудниками.
+
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QListWidget, QPushButton, QMessageBox, QInputDialog, QLineEdit
 from database import session, User, UserRole
 
@@ -52,3 +54,8 @@ class EmployeeTab(QWidget):
             session.commit()
             self.load_users()
             QMessageBox.information(self, 'User Fired', f'{user.username} has been fired.')
+
+
+# load_users: Загружает список всех пользователей из базы данных.
+# add_user: Добавляет нового пользователя с заданным именем пользователя, паролем и ролью. В отеле роли могут быть receptionist и housekeeper.
+# fire_user: Изменяет статус выбранного пользователя на "уволен".

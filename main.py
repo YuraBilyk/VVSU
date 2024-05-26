@@ -11,3 +11,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+# Установка необходимых библиотек
+# pip install PyQt5 SQLAlchemy
