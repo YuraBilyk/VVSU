@@ -1,15 +1,15 @@
-# login_window.py
+# login_interface.py
 # Этот файл отвечает за окно входа в систему.
 
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QPushButton, QVBoxLayout, QWidget, QMessageBox
 from database import session, User, UserRole
 
-class LoginWindow(QMainWindow):
+class LoginInterface(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle('Login')
-        self.setGeometry(100, 100, 280, 150)
+        self.setGeometry(200, 400, 380, 250)
         self.initUI()
 
     def initUI(self):
@@ -40,31 +40,31 @@ class LoginWindow(QMainWindow):
 
         user = session.query(User).filter_by(username=username, password=password).first()
         if user:
-            if user.status == 'fired':
-                QMessageBox.warning(self, 'Login', 'Your account has been deactivated.')
+            if user.status == 'inactive':  # Ранее 'уволен'
+                QMessageBox.warning(self, 'Login', 'Your account is deactivated.')
             else:
-                QMessageBox.information(self, 'Login', f'Welcome {user.username}!')
+                QMessageBox.information(self, 'Login', f'Welcome, {user.username}!')
                 self.open_role_window(user)
         else:
-            QMessageBox.warning(self, 'Login', 'Invalid credentials')
+            QMessageBox.warning(self, 'Login', 'Invalid credentials.')
 
     def open_role_window(self, user):
-        if user.role == UserRole.ADMIN:
-            from admin_window import AdminWindow
-            self.admin_window = AdminWindow(user)
+        if user.role == UserRole.MANAGER:  # Ранее 'admin'
+            from admin_window import ManagerInterface  # Ранее 'admin_window'
+            self.admin_window = ManagerInterface(user)
             self.admin_window.show()
-        elif user.role == UserRole.WAITER:  # Измените на 'receptionist'
-            from waiter_window import WaiterWindow
-            self.waiter_window = WaiterWindow(user)
-            self.waiter_window.show()
-        elif user.role == UserRole.CHEF:  # Измените на 'housekeeper'
-            from chef_window import ChefWindow
-            self.chef_window = ChefWindow(user)
-            self.chef_window.show()
+        elif user.role == UserRole.ASSOCIATE:  # Ранее 'waiter'
+            from associate_interface import AssociateInterface  # Ранее 'waiter_window'
+            self.associate_interface = AssociateInterface(user)
+            self.associate_interface.show()
+        elif user.role == UserRole.SPECIALIST:  # Ранее 'chef'
+            from specialist_interface import SpecialistInterface  # Ранее 'chef_window'
+            self.specialist_interface = SpecialistInterface(user)
+            self.specialist_interface.show()
         self.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    login_window = LoginWindow()
-    login_window.show()
+    login_interface = LoginInterface()
+    login_interface.show()
     sys.exit(app.exec_())
